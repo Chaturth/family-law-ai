@@ -1,0 +1,7 @@
+.env
+data/*.db
+data/secret.key
+data/outcomes.csv
+__pycache__/
+.venv/
+data/usage.json

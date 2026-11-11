@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dispute Architect AI</title>
+<style>
+:root{--bg:#f4f6f5;--card:#fff;--ink:#1d2b35;--mut:#70808a;--acc:#24645d;--acc-dark:#174b48;--gold:#d8aa69;--ok:#287854;--warn:#a86825;--bad:#b04a44;--bd:#e2e8e5;--soft:#edf4f1;--shadow:0 12px 34px rgba(27,52,48,.06)}
+*{box-sizing:border-box}body{margin:0;font:14px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+button,input,textarea,select{font:inherit}button{transition:transform .16s ease,background .16s ease,border-color .16s ease}
+.app-shell{min-height:100vh;display:grid;grid-template-columns:252px minmax(0,1fr)}
+.sidebar{position:sticky;top:0;height:100vh;padding:26px 18px 18px;background:linear-gradient(155deg,#173b42 0%,#18313e 58%,#1d3340 100%);color:#fff;display:flex;flex-direction:column;z-index:5}
+.brand{display:flex;align-items:center;gap:12px;padding:2px 8px 30px}.brand-mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#e4bd7d,#c68e4d);display:grid;place-items:center;color:#173b42;font-family:Georgia,serif;font-size:23px;font-weight:700;box-shadow:0 6px 16px #0e262b66}.brand-copy strong{display:block;font-family:Georgia,serif;font-size:17px;letter-spacing:.1px}.brand-copy small{color:#b4c5c6;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.nav-caption{color:#8fa7aa;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:0 12px 9px}
+nav{display:grid;gap:5px}
+nav button{width:100%;border:0;background:transparent;color:#c5d2d3;text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:13px}
+nav button:hover{background:#ffffff10;color:#fff}
+nav button.on{color:#fff;background:#ffffff16;box-shadow:inset 3px 0 0 var(--gold)}
+.nav-number{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:#ffffff12;color:#d8c49d;font-size:11px;font-weight:700;flex:none}
+nav button.on .nav-number{background:#d8aa69;color:#18323a}
+.sidebar-spacer{flex:1}.privacy-card{border:1px solid #ffffff1c;background:#ffffff0b;border-radius:13px;padding:14px;margin:18px 3px 4px}.privacy-card strong{font-size:12px}.privacy-card p{color:#aec0c1;font-size:11px;margin:6px 0 0}.privacy-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#79c18b;margin-right:6px}
+.main-pane{min-width:0}.topbar{min-height:78px;background:rgba(255,255,255,.82);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:15px clamp(20px,4vw,54px);gap:20px;backdrop-filter:blur(12px)}
+.topbar h1{font-family:Georgia,"Times New Roman",serif;font-size:22px;line-height:1.2;margin:0;letter-spacing:-.02em}.topbar p{margin:4px 0 0;color:var(--mut);font-size:12px}.topbar-right{display:flex;align-items:center;gap:10px}.mode-pill{font-size:11px;font-weight:650;color:var(--acc-dark);padding:7px 11px;border:1px solid #d5e5de;background:#f1f8f3;border-radius:99px;white-space:nowrap}
+.notice{padding:10px clamp(20px,4vw,54px);font-size:12px;color:#705326;background:#fbf4e7;border-bottom:1px solid #efe1c5}
+.main-content{max-width:1440px;margin:0 auto;padding:30px clamp(20px,4vw,54px) 60px}
+.module-intro{margin:0 0 22px}.eyebrow{display:inline-block;font-size:10px;font-weight:750;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:5px}.module-intro h2{font-family:Georgia,"Times New Roman",serif;font-size:28px;letter-spacing:-.025em;margin:0 0 5px}.module-intro p{margin:0;color:var(--mut);max-width:720px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:15px;padding:22px;margin-bottom:17px;box-shadow:var(--shadow)}
+.card h2{font-size:16px;margin:0 0 5px;letter-spacing:-.01em}.card h3{margin:17px 0 7px;font-size:13px;letter-spacing:.01em}.card>h2+p{margin:0 0 14px;color:var(--mut);font-size:12px}
+label{font-size:11px;font-weight:650;color:#5e7079;display:block;margin:12px 0 5px}
+textarea,input:not([type=checkbox]):not([type=file]),select{width:100%;font:14px/1.5 Inter,ui-sans-serif,system-ui,sans-serif;padding:10px 12px;border:1px solid #dce4e1;border-radius:9px;background:#fbfcfb;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
+textarea{min-height:150px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:#68a69b;box-shadow:0 0 0 3px #24645d16}
+input[type=file]{font:12px system-ui;color:var(--mut);padding:10px;border:1px dashed #cbd8d2;border-radius:9px;background:#f8faf9;width:100%}
+button.go{background:var(--acc);color:#fff;border:0;padding:10px 16px;border-radius:9px;cursor:pointer;margin:10px 8px 0 0;font-weight:650;font-size:12px;box-shadow:0 4px 10px #24645d24}
+button.go:hover{background:var(--acc-dark);transform:translateY(-1px)}
+button.alt,.alt{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#fff;color:var(--acc-dark);border:1px solid #d4dfda;padding:9px 14px;border-radius:9px;cursor:pointer;margin:10px 8px 0 0;text-decoration:none;font-weight:600;font-size:12px}
+button.alt:hover,.alt:hover{border-color:#8eb8ad;background:#f5faf7}
+button:disabled{opacity:.55;cursor:not-allowed}button[hidden]{display:none}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px}.field-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.field-grid label{margin-top:7px}
+.legal-editor{min-height:360px;background:#fff;font-family:Georgia,"Times New Roman",serif;font-size:14px;line-height:1.8}
+.legal-document{white-space:pre-wrap;background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px;max-height:420px;overflow:auto;font-family:Georgia,"Times New Roman",serif;font-size:13px;line-height:1.75;color:#37484e}
+.tag{display:inline-block;padding:3px 9px;border-radius:99px;font-size:10px;font-weight:650;margin:2px;background:#f1f5f3;border:1px solid #e0e8e4;color:#52666b}
+.high{color:var(--bad)}.medium{color:var(--warn)}.low{color:var(--ok)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:10px}.cal div{padding:7px 4px;border-radius:7px;text-align:center;background:#f7f9f8}.cal .A{background:#e2f0eb;color:#24564e}.cal .B{background:#f8edda;color:#765327}
+.bars{display:flex;align-items:flex-end;gap:3px;height:110px;padding:8px 0}.bars i{flex:1;background:linear-gradient(0deg,#24645d,#78b1a5);min-height:2px;opacity:.9;border-radius:4px 4px 0 0}.bars.b i{background:linear-gradient(0deg,#bd8d50,#e2c28f)}
+.chat{height:240px;overflow:auto;background:#f8faf9;border:1px solid var(--bd);border-radius:10px;padding:12px}.msg{margin:7px 0;padding:8px 10px;background:#fff;border:1px solid #e7ece9;border-radius:9px}.esc3{border-left:4px solid var(--bad);padding-left:9px}.esc2{border-left:4px solid var(--gold);padding-left:9px}
+.advanced{margin:16px 0 4px;border:1px solid var(--bd);border-radius:10px;padding:0 12px;background:#fafcfb}.advanced summary{cursor:pointer;padding:11px 0;color:var(--acc);font-weight:650;font-size:12px}.advanced textarea{background:#fff}
+.disclaimer-note{font-size:11px;color:var(--mut);margin-top:12px}.check-row{display:flex;gap:18px;flex-wrap:wrap;padding:10px 0}.check-row label{display:flex;align-items:center;gap:7px;margin:0;font-size:12px;font-weight:550}.check-row input{accent-color:var(--acc)}
+.availability{margin-top:13px}.availability strong{font-size:11px;color:#5e7079}.availability .check-row{gap:7px;margin-top:4px}.availability .check-row label{border:1px solid var(--bd);border-radius:8px;padding:6px 9px;background:#fafcfb}
+.fact-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.fact-item{padding:10px 12px;border:1px solid var(--bd);border-radius:9px;background:#fafcfb;min-width:0}.fact-item strong{display:block;color:var(--mut);font-size:10px;font-weight:650;margin-bottom:3px}.fact-item span{font-size:12px;overflow-wrap:anywhere}
+.bid-issue{border:1px solid var(--bd);border-radius:10px;padding:12px;margin:12px 0}.bid-issue h4{margin:0 0 6px;font-size:12px}.bid-issue .field-grid label{font-size:10px}.number-help{font-size:10px;color:var(--mut);margin:7px 0 0}
+.result-panel{margin-top:16px}.section-kicker{color:var(--mut);font-size:11px}
+@media(max-width:900px){.app-shell{grid-template-columns:210px minmax(0,1fr)}.sidebar{padding:22px 12px}.brand{padding-left:5px}.row{gap:12px}.main-content{padding-top:24px}}
+@media(max-width:680px){body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}.app-shell{display:block}.sidebar{position:fixed;top:0;left:0;right:0;width:100%;height:58px;padding:10px 15px;background:#193941;box-shadow:0 2px 12px #16343a24}.brand{padding:0 3px;gap:9px}.brand-mark{width:34px;height:34px;border-radius:11px;font-size:19px}.brand-copy strong{font-size:15px}.brand-copy small{font-size:9px}.nav-caption,.sidebar-spacer,.privacy-card{display:none}nav{position:fixed;z-index:15;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:7px 5px calc(7px + env(safe-area-inset-bottom));border-top:1px solid var(--bd);background:#ffffffed;backdrop-filter:blur(16px);box-shadow:0 -5px 20px #1d38300d}nav button{width:100%;min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:3px 1px;border-radius:9px;color:#63757b;text-align:center;font-size:9px;line-height:1.15}nav button.on{color:var(--acc-dark);background:#eaf3ef;box-shadow:none}.nav-number{width:22px;height:22px;border-radius:7px;font-size:10px;background:#edf2f0;color:var(--acc)}nav button.on .nav-number{background:var(--acc);color:white}.nav-label{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.main-pane{padding-top:58px}.topbar{min-height:61px;padding:9px 16px;align-items:center;flex-direction:row;gap:8px}.topbar h1{font-size:15px}.topbar p{display:none}.topbar-right{width:auto;gap:0}.mode-pill{font-size:9px;padding:5px 8px;max-width:130px;white-space:normal}.main-content{padding:17px 13px 36px}.notice{padding:8px 14px;font-size:10px}.module-intro{display:none}.row,.field-grid,.field-grid.three{grid-template-columns:1fr;gap:8px}.card{padding:16px;margin-bottom:12px;border-radius:14px}.card h2{font-size:15px}.card h3{margin-top:14px}.fact-list{grid-template-columns:1fr}.bid-issue{padding:10px}.check-row{gap:10px}.cal{gap:2px}.cal div{padding:5px 2px}.chat{height:190px}.go,.alt{min-height:42px}textarea{font-size:14px}}
+.nav-short{display:none}
+@media(max-width:680px){nav button{gap:3px;font-size:9px}.topbar>div:first-child{min-width:0;flex:1}.topbar h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mode-pill{flex:none}.nav-label{display:none}.nav-short{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+/* Refined visual system */
+:root{color-scheme:light;--bg:#f4f7f6;--card:#fff;--ink:#172a31;--mut:#71818a;--acc:#197769;--acc-dark:#125b53;--gold:#e5b96f;--ok:#21805e;--warn:#a86a20;--bad:#b74643;--bd:#e5ece9;--soft:#eaf4f1;--shadow:0 12px 32px rgba(27,52,48,.055);--shadow-hover:0 20px 46px rgba(27,52,48,.105)}
+body{background:radial-gradient(ellipse at 82% 0%,#e7f2ef 0,transparent 36%),var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+.app-shell{grid-template-columns:264px minmax(0,1fr)}
+.sidebar{background:linear-gradient(165deg,#16383d 0%,#193541 52%,#202e40 100%);box-shadow:8px 0 32px #143c3310}
+.brand{padding-bottom:35px}.brand-mark{background:linear-gradient(145deg,#f1d39c,#d8a85f);box-shadow:0 8px 20px #0e262b55}
+nav{gap:7px}nav button{min-height:48px;padding:10px 12px;border:1px solid transparent;border-radius:13px;color:#c5d2d3;gap:11px}
+nav button.on{background:linear-gradient(100deg,#ffffff1c,#ffffff0a);border-color:#ffffff12;box-shadow:inset 3px 0 0 var(--gold)}
+.nav-icon{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:11px;color:#a8c6c0;background:#ffffff0b;transition:background .2s,color .2s,transform .2s}
+nav button.on .nav-icon{color:#fff;background:#2e776b}
+.nav-icon svg,.module-icon svg,.metric-icon svg{display:block}
+.nav-number{margin-left:auto;width:23px;height:23px;border:1px solid #ffffff16;background:#ffffff0a;color:#c3d0ca;border-radius:8px;font-size:10px}
+.topbar{position:sticky;top:0;z-index:4;min-height:82px;padding:14px clamp(22px,4vw,60px);background:#ffffffeb;border-bottom-color:#e6eeeb;box-shadow:0 5px 22px #19343a08}
+.topbar h1{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:20px;font-weight:720;letter-spacing:-.035em;color:#18323a}
+.topbar p{font-size:12px}
+.mode-pill{display:inline-flex;align-items:center;gap:7px;color:#17675c;background:#eef8f3;border-color:#d6eae0;padding:8px 13px;font-size:11px}
+.mode-pill:before{content:"";width:7px;height:7px;border-radius:50%;background:#32a476;box-shadow:0 0 0 3px #32a47620}
+.notice{padding:9px clamp(22px,4vw,60px);font-size:11px;color:#725b37;background:linear-gradient(90deg,#fbf5e9,#fffaf1);border-bottom-color:#f0e5d1}
+.main-content{max-width:1500px;padding:32px clamp(22px,4vw,60px) 72px}
+.module-intro{display:flex;align-items:center;gap:19px;position:relative;overflow:hidden;padding:24px 26px;margin:0 0 23px;border:1px solid #dfece7;border-radius:20px;background:linear-gradient(115deg,#fff 5%,#f2f8f5 67%,#e8f3ef);box-shadow:0 10px 28px #163a3210;animation:rise-in .4s ease both}
+.module-intro:after{content:"";position:absolute;right:-56px;top:-116px;width:255px;height:255px;border:1px solid #4d98871b;border-radius:50%;box-shadow:0 0 0 25px #4d988708,0 0 0 52px #4d988706;pointer-events:none}
+.module-icon{display:grid;place-items:center;width:58px;height:58px;flex:none;border:1px solid #d2e7df;border-radius:18px;color:#197769;background:linear-gradient(145deg,#f3fbf7,#e1f1ea);box-shadow:0 7px 16px #24645d14}
+.module-copy{min-width:0}.module-intro .eyebrow{margin-bottom:2px;color:#1b806e;font-size:10px}
+.module-intro h2{margin:0 0 3px;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:24px;font-weight:730;letter-spacing:-.04em;color:#1b3238}
+.module-intro p{max-width:680px;margin:0;color:#6b7b81;font-size:12px}
+.workspace-pill{position:relative;z-index:1;margin-left:auto;padding:7px 11px;border:1px solid #dce9e3;border-radius:99px;background:#ffffffbd;color:#55756d;font-size:10px;font-weight:650;white-space:nowrap}
+.card{position:relative;padding:23px;margin-bottom:17px;border-color:#e4ece8;border-radius:18px;box-shadow:0 7px 24px #193c3208;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;animation:rise-in .36s ease both}
+.card:hover{transform:translateY(-2px);border-color:#d6e5df;box-shadow:var(--shadow-hover)}
+.card h2{font-size:16px;font-weight:720;letter-spacing:-.025em;color:#1a3037}
+.card h3{margin:20px 0 9px;font-size:13px;font-weight:700;color:#28434a}
+.card>h2+p{margin:0 0 17px;color:#75848a;font-size:12px}
+label{color:#536971;font-size:11px;font-weight:680;letter-spacing:.005em;margin:13px 0 6px}
+textarea,input:not([type=checkbox]):not([type=file]),select{padding:11px 13px;border-color:#dfe8e4;border-radius:11px;background:#fcfdfc;font-size:13px;transition:border-color .18s,box-shadow .18s,background .18s}
+textarea:focus,input:focus,select:focus{border-color:#68a99a;background:#fff;box-shadow:0 0 0 4px #19776914}
+input[type=file]{border-color:#d4e4dd;border-radius:11px;background:#f8fbf9}
+button.go{padding:11px 17px;border-radius:11px;background:linear-gradient(135deg,#218677,#176559);box-shadow:0 6px 14px #19776926;font-size:12px;transition:transform .2s,box-shadow .2s,filter .2s}
+button.go:hover{transform:translateY(-2px);box-shadow:0 10px 20px #19776930;filter:saturate(1.12)}
+button.alt,.alt{padding:10px 15px;border-color:#d9e6e1;border-radius:11px;color:#17675c;background:linear-gradient(180deg,#fff,#f8fbf9);font-size:12px;transition:transform .2s,box-shadow .2s,border-color .2s}
+button.alt:hover,.alt:hover{transform:translateY(-1px);border-color:#9fc8bb;background:#f2f8f5;box-shadow:0 5px 13px #193c320d}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #5eb09a;outline-offset:3px}
+.row{gap:17px}.field-grid{gap:7px 15px}.field-grid.three{gap:7px 14px}
+.legal-document{border-color:#e5ece9;border-radius:13px;background:linear-gradient(180deg,#fff,#fcfdfc);box-shadow:inset 0 1px #fff}
+.tag{padding:4px 10px;border-color:#e2ebe6;background:#f5f8f6;color:#4f6b65}
+.high,.medium,.low{font-weight:650}.cal{gap:5px}.cal div{padding:8px 4px;border:1px solid #edf1ef;border-radius:9px;background:#fafcfb}.cal .A{border-color:#d4e9e0;background:#e8f5ef;color:#22634d}.cal .B{border-color:#f0e2c7;background:#fcf3e3;color:#7a5925}
+.chat{border-color:#e4ece8;border-radius:13px;background:linear-gradient(180deg,#f8fbf9,#f2f7f4)}
+.msg{border-color:#e4ece8;border-radius:11px;box-shadow:0 2px 6px #193c3206}
+.advanced{border-color:#e2ebe7;border-radius:12px;background:#fafcfb}.advanced summary{padding:13px 0}
+.fact-list{gap:10px}.fact-item{padding:13px 14px;border-color:#e4ece8;border-radius:12px;background:linear-gradient(145deg,#fff,#f9fbfa)}
+.fact-item strong{font-size:10px;letter-spacing:.045em;text-transform:uppercase;color:#7d8c8d}.fact-item span{font-size:12px;color:#243b41}
+.bid-issue{padding:15px;border-color:#e4ece8;border-radius:13px;background:linear-gradient(145deg,#fff,#fafcfb)}
+.result-panel{margin-top:17px}.bars{height:142px;gap:5px;padding:14px 5px 2px;border-bottom:1px solid #e8efec;border-radius:9px 9px 0 0;background:repeating-linear-gradient(to top,#f8faf9 0,#f8faf9 1px,transparent 1px,transparent 34px)}
+.bars i{min-width:3px;opacity:.94;border-radius:5px 5px 2px 2px;box-shadow:inset 0 1px #ffffff5c;transition:filter .2s,transform .2s}
+.bars i:hover{filter:brightness(1.12);transform:scaleX(1.06)}
+.bars.b i{background:linear-gradient(0deg,#b77d36,#efd39b)}
+.analytics-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.metric-card{position:relative;min-width:0;overflow:hidden;padding:17px;border:1px solid #e4ece8;border-radius:16px;background:linear-gradient(150deg,#fff 25%,#f7fbf9);box-shadow:0 5px 16px #193c3208}
+.metric-card:after{content:"";position:absolute;right:-24px;bottom:-38px;width:96px;height:96px;border-radius:50%;background:#dcefe811;pointer-events:none}
+.metric-head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#718187;font-size:10px;font-weight:680}
+.metric-icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid #dfede7;border-radius:10px;background:#eef7f3;color:#25806d}
+.metric-value{display:block;margin:12px 0 2px;color:#1c353b;font-size:clamp(16px,1.8vw,23px);font-weight:760;letter-spacing:-.045em;line-height:1.15;white-space:nowrap}
+.metric-note{display:block;color:#839095;font-size:10px}
+.metric-card.maintenance{background:linear-gradient(140deg,#f1faf6,#fff 85%);border-color:#dcece4}
+.metric-card.settlement{background:linear-gradient(140deg,#f5f7ff,#fff 85%);border-color:#e2e7f3}
+.metric-card.probability{background:linear-gradient(140deg,#eff9f5,#fff 85%);border-color:#dcece4}
+.metric-card.assetshare{background:linear-gradient(140deg,#f9f7ef,#fff 85%);border-color:#eee8d7}
+.metric-card.networth{background:linear-gradient(140deg,#f9f7ef,#fff 85%);border-color:#eee8d7}
+.metric-card.timeline{background:linear-gradient(140deg,#f3f6fa,#fff 85%);border-color:#e0e7ef}
+.chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:16px}
+.chart-card{min-width:0;padding:18px;border:1px solid #e5ece9;border-radius:15px;background:#fff}
+.chart-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.chart-title h3{margin:0;color:#29434a;font-size:13px}.chart-title p{margin:3px 0 0;color:#899599;font-size:10px}
+.chart-legend{display:flex;gap:12px;align-items:center;margin-top:11px;color:#718187;font-size:10px}
+.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:8px;height:8px;border-radius:3px;background:#3d9b84}.legend-dot.gold{background:#d7aa69}
+.chart-stats{display:flex;justify-content:space-between;gap:7px;flex-wrap:wrap;margin-top:10px;color:#728187;font-size:10px}
+.chart-stats strong{color:#31484e;font-weight:700}
+.timeline-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.timeline-card{padding:13px 14px;border:1px solid #e4ece8;border-radius:13px;background:#fafcfb}
+.timeline-card.recommended{border-color:#cfe5da;background:linear-gradient(135deg,#eef8f2,#fff)}
+.timeline-card span{display:block;color:#718187;font-size:10px;font-weight:650}
+.timeline-card strong{display:block;margin-top:4px;color:#233c42;font-size:17px;letter-spacing:-.025em}
+.timeline-card small{color:#899599;font-size:10px}
+.probability-row{display:flex;align-items:center;gap:13px;margin:16px 0;padding:15px 16px;border:1px solid #e3ebe7;border-radius:14px;background:linear-gradient(100deg,#f7faf8,#fff)}
+.probability-track{flex:1;height:9px;overflow:hidden;border-radius:99px;background:#e9efec}
+.probability-track span{display:block;width:var(--probability);height:100%;border-radius:inherit;background:linear-gradient(90deg,#65b79b,#21816d);transition:width .7s ease}
+.probability-value{min-width:48px;text-align:right;color:#1d6e5e;font-size:16px;font-weight:760}
+.analytics-note{padding:12px 14px;border:1px solid #e8ece8;border-radius:12px;background:#fafbf8;color:#718187;font-size:11px}
+.tradeoff-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:15px}
+.tradeoff-kpi{padding:15px;border:1px solid #e4ece8;border-radius:13px;background:linear-gradient(145deg,#fff,#f8fbf9)}
+.tradeoff-kpi span{display:block;color:#74848a;font-size:10px;font-weight:650}
+.tradeoff-kpi strong{display:block;margin-top:6px;color:#1f4946;font-size:17px;letter-spacing:-.025em;overflow-wrap:anywhere}
+.scenario-title{display:flex;align-items:center;gap:8px}.scenario-title:before{content:"";width:9px;height:9px;border-radius:3px;background:#32977f}.scenario-title.gold:before{background:#d2a35e}
+@keyframes rise-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1100px){.app-shell{grid-template-columns:224px minmax(0,1fr)}.analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.chart-grid{grid-template-columns:1fr}.timeline-grid{grid-template-columns:1fr}.timeline-card{display:flex;align-items:center;justify-content:space-between;gap:12px}.timeline-card strong{margin:0}.timeline-card small{margin-left:auto}}
+@media(max-width:680px){.sidebar{box-shadow:0 7px 24px #112c3029}.brand{padding-bottom:0}.brand-mark{border-radius:12px}.brand-copy strong{font-size:14px}.main-pane{padding-top:58px}.topbar{top:58px;min-height:58px;padding:8px 15px;box-shadow:0 4px 14px #19343a08}.topbar h1{font-size:14px}.mode-pill{font-size:9px;padding:6px 9px}.main-content{padding:17px 13px 34px}.module-intro{gap:12px;padding:15px;margin-bottom:14px;border-radius:16px}.module-icon{width:43px;height:43px;border-radius:14px}.module-icon svg{width:21px;height:21px}.module-intro h2{font-size:17px}.module-intro p{font-size:10px;line-height:1.4}.module-intro .eyebrow{font-size:9px}.workspace-pill{display:none}.card{padding:16px;margin-bottom:12px;border-radius:15px}.card:hover{transform:none;box-shadow:0 7px 24px #193c3208}.card h2{font-size:15px}.card>h2+p{font-size:11px}.row,.field-grid,.field-grid.three{gap:7px}.analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:13px 0}.metric-card{padding:13px;border-radius:13px}.metric-head{font-size:9px}.metric-icon{width:28px;height:28px;border-radius:9px}.metric-icon svg{width:15px;height:15px}.metric-value{font-size:18px;margin-top:10px}.metric-note{font-size:9px}.chart-card{padding:14px}.bars{height:118px}.probability-row{gap:9px;padding:12px}.probability-row>strong{font-size:11px}.probability-value{font-size:14px}.tradeoff-kpis{grid-template-columns:1fr}.tradeoff-kpi{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px}.tradeoff-kpi strong{margin:0;font-size:15px}.nav-icon{width:27px;height:25px;border:0;border-radius:8px;background:transparent}.nav-icon svg{width:19px;height:19px}.nav-number{display:none}nav button.on .nav-icon{color:#197769;background:transparent}.nav-label{display:none}.nav-short{display:block;max-width:100%;font-size:9px}nav{padding:6px 5px calc(7px + env(safe-area-inset-bottom))}nav button{gap:1px;min-height:49px}.fact-list{gap:7px}.fact-item{padding:10px}.bid-issue{padding:11px}.notice{font-size:9px}.cal{font-size:9px}}
+@media(max-width:360px){.analytics-kpis{grid-template-columns:1fr}.metric-card{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:8px}.metric-head{grid-column:1/-1}.metric-value,.metric-note{grid-column:1}.metric-icon{grid-column:2;grid-row:1;align-self:center}.metric-value{font-size:19px}.nav-short{font-size:8px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style></head><body>
+<div class="app-shell">
+<aside class="sidebar">
+ <div class="brand"><div class="brand-mark">§</div><div class="brand-copy"><strong>Dispute Architect</strong><small>Family law · India</small></div></div>
+ <div class="nav-caption">Workspace</div><nav id="nav"></nav>
+ <div class="sidebar-spacer"></div>
+ <div class="privacy-card"><strong><span class="privacy-dot"></span>Demo workspace</strong><p>Use non-sensitive demo details. Party accounts and access controls are not configured.</p></div>
+</aside>
+<section class="main-pane">
+ <header class="topbar"><div><h1 id="pageTitle">Legal Document Generator</h1><p id="pageSub">A guided workspace for intake, research and advocate-reviewed drafts</p></div><div class="topbar-right"><span class="mode-pill" id="mode"></span></div></header>
+ <div class="notice" id="disc"></div>
+ <main class="main-content" id="main"></main>
+</section>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+let CASE=null, SID=null, NID=null, PID=null, DID=null, NRESULT=null;
+async function api(path,opt={}){
+  if(opt.body&&!(opt.body instanceof FormData)){opt.headers={'Content-Type':'application/json'};opt.body=JSON.stringify(opt.body)}
+  const r=await fetch('/api'+path,opt); if(!r.ok){let t=await r.text();throw new Error(r.status+' '+t)}
+  return (r.headers.get('content-type')||'').includes('json')?r.json():r;
+}
+const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const out=(id,v)=>{$('#'+id).innerHTML=v};
+const run=(id,fn)=>async()=>{out(id,'<i>working...</i>');try{await fn()}catch(e){out(id,'<b class=high>'+esc(e.message)+'</b>')}};
+
+const TABS={
+ doc:()=>`<div class=card><h2>Start with a clear case record</h2><p>Enter the basic case information, then upload documents to help complete the intake.</p>
+  <div class=row><div><label>Case title</label><input id=title value="Sharma v. Sharma">
+  <div class=field-grid><div><label>Petitioner name</label><input id=petitionerName value="Anita Sharma"></div><div><label>Petitioner occupation</label><input id=petitionerOccupation value="Teacher"></div>
+  <div><label>Petitioner monthly income (₹)</label><input id=petitionerIncome type=number min=0 value=55000></div><div><label>Respondent name</label><input id=respondentName value="Rahul Sharma"></div>
+  <div><label>Respondent occupation</label><input id=respondentOccupation value="Software Engineer"></div><div><label>Respondent monthly income (₹)</label><input id=respondentIncome type=number min=0 value=180000></div>
+  <div><label>Marriage date</label><input id=marriageDate type=date value="2016-02-14"></div><div><label>Marriage place</label><input id=marriagePlace value="Bengaluru"></div>
+  <div><label>Personal law</label><select id=personalLaw><option value=hindu>Hindu</option><option value=special_marriage>Special Marriage Act</option><option value=christian>Christian</option><option value=muslim>Muslim</option><option value=other>Other</option></select></div>
+  <div><label>Separation date</label><input id=separationDate type=date value="2024-03-01"></div>
+  <div><label>Child’s name</label><input id=caseChildName value="Aarav"></div><div><label>Child’s age</label><input id=caseChildAge type=number min=0 max=18 value=6></div>
+  <div><label>Assets (₹)</label><input id=caseAssets type=number min=0 value=10700000></div><div><label>Liabilities (₹)</label><input id=caseLiabilities type=number min=0 value=4200000></div>
+  <div><label>Jurisdiction city</label><input id=caseCity value="Bengaluru"></div><div><label>Jurisdiction state</label><input id=caseState value="Karnataka"></div>
+  <div><label>Court</label><input id=caseCourt value="Family Court, Bengaluru"></div></div>
+  <label>Dispute summary</label><textarea id=disputeSummary style="min-height:90px;font-family:inherit;font-size:13px">Parties separated in March 2024 and want a mutual-consent divorce; custody and maintenance to be settled.</textarea>
+  <button class=go onclick="mkCase()">Create case workspace</button></div>
+  <div><label>Upload an intake document</label><input type=file id=file accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.txt,.md,.csv">
+  <p class=section-kicker>PDF, image, Word or text. The system extracts suggested facts for your review.</p>
+  <button class=go onclick="upDoc()">Upload & extract facts</button>
+  <h3>Current case</h3><div id=caseOut><i>Create a case workspace to begin.</i></div></div></div></div>
+  <div class=row><div class=card><h2>Legal research</h2><p>Search the starter India family-law knowledge base.</p><input id=rq value="mutual consent divorce cooling period" aria-label="Research query">
+  <button class=go onclick="research()">Search sources</button><div id=resOut></div></div>
+  <div class=card><h2>Generate a legal document</h2><p>Prepare a reviewable draft from the current case facts.</p>
+  <label>Document type</label><select id=dt></select><button class=go onclick="mkDraft()">Generate draft</button><div id=draftOut></div></div></div>`,
+ med:()=>`<div class=card><h2>Mediation Copilot</h2><p>Keep shared conversation separate from private mediator insights.</p>
+  <div class=row><div><h3>Shared conversation</h3><div class=chat id=pchat></div>
+   <div class=field-grid><div><label>Speaking as</label><select id=who><option>A</option><option>B</option></select></div><div><label>Message</label><input id=ptext placeholder="Type a message..."></div></div>
+   <button class=go onclick="sendMsg()">Send to shared chat</button></div>
+  <div><h3>Private mediator view</h3><div class=chat id=mchat></div>
+   <button class=alt onclick="medOptions()">Explore settlement options</button></div></div>
+  <div id=optOut></div></div>`,
+ cust:()=>`<div class=card><h2>Build a child-centered parenting plan</h2><p>Compare a practical schedule using the child’s age, parent availability and travel distance.</p>
+  <div class=field-grid three><div><label>Child’s name</label><input id=childName value="Aarav"></div><div><label>Child’s age</label><input id=childAge type=number min=0 max=18 value=6></div><div><label>Travel distance between homes (km)</label><input id=distanceKm type=number min=0 value=12></div>
+  <div><label>Parent A</label><input id=parentA value="Anita Sharma"></div><div><label>Parent B</label><input id=parentB value="Rahul Sharma"></div><div><label>Primary home preference</label><select id=primaryParent><option value=A>Parent A</option><option value=B>Parent B</option></select></div></div>
+  <div class=row><div class=availability><strong>Parent A · generally available days</strong><div class=check-row id=availabilityA>${[['Mon',0],['Tue',1],['Wed',2],['Thu',3],['Fri',4],['Sat',5],['Sun',6]].map(([d,n])=>`<label><input type=checkbox value=${n} checked>${d}</label>`).join('')}</div></div>
+  <div class=availability><strong>Parent B · generally available days</strong><div class=check-row id=availabilityB>${[['Mon',0],['Tue',1],['Wed',2],['Thu',3],['Fri',4],['Sat',5],['Sun',6]].map(([d,n])=>`<label><input type=checkbox value=${n} ${[2,4,5,6].includes(n)?'checked':''}>${d}</label>`).join('')}</div></div></div>
+  <p class=disclaimer-note>Availability and safety considerations should be reviewed with the family and counsel.</p>
+  <button class=go onclick="mkCustody()">Model parenting plan</button><div id=custOut class=result-panel></div></div>`,
+ anal:()=>`<div class=card><h2>Explore settlement scenarios</h2><p>Illustrative ranges only. Predictions are heuristic and are not legal advice or a court outcome.</p>
+  <div class=field-grid three><div><label>Monthly income — payer (₹)</label><input id=incomePayer type=number min=0 value=180000></div><div><label>Monthly income — payee (₹)</label><input id=incomePayee type=number min=0 value=55000></div><div><label>Payee monthly expenses (₹)</label><input id=expensesPayee type=number min=0 value=60000></div>
+  <div><label>Marriage length (years)</label><input id=marriageYears type=number min=0 step=0.5 value=8.5></div><div><label>Number of children</label><input id=childrenCount type=number min=0 step=1 value=1></div><div><label>Matrimonial assets (₹)</label><input id=assetsValue type=number min=0 value=10700000></div>
+  <div><label>Liabilities (₹)</label><input id=liabilitiesValue type=number min=0 value=4200000></div></div>
+  <div class=check-row><label><input id=hasCustody type=checkbox checked> Payee has custody</label><label><input id=homemaker type=checkbox> Payee is a homemaker</label></div>
+  <button class=go onclick="predict()">Compare settlement scenarios</button><div id=aout class=result-panel></div></div>
+  <div class=card><h2>Maintenance and asset trade-off</h2><p>Compare a one-time asset adjustment with a monthly maintenance change over time.</p>
+  <div class=field-grid three><div><label>Asset value exchanged (₹)</label><input id=tradeAsset type=number min=0 value=2000000></div><div><label>Current monthly amount (₹)</label><input id=tradeMonthly type=number min=0 value=45000></div><div><label>Comparison period (months)</label><input id=tradeHorizon type=number min=1 value=120></div></div>
+  <button class=go onclick="tradeoff()">Calculate trade-off</button><div id=tout class=result-panel></div></div>`,
+ disp:()=>`<div class=card><h2>Route the dispute thoughtfully</h2><p>Screen urgency and identify a next step before moving into negotiation or evidence preparation.</p><textarea id=tri style="min-height:90px">We separated amicably last year and want to settle custody and finances without going to court.</textarea>
+  <button class=go onclick="triage()">Assess dispute</button><div id=triOut></div></div>
+  <div class=card><h2>Confidential negotiation</h2><p>Each party submits a private position; only issue outcomes are shared.</p>
+  <button class=alt onclick="mkNeg()">Start negotiation</button> <span id=negId></span>
+  <div class=row><div><h3>Party A · typically pays</h3>
+   <div class=bid-issue><h4>Monthly maintenance (₹)</h4><div class=field-grid three><div><label>Preferred amount</label><input id=bid-A-maintenance-ideal type=number min=0 value=25000></div><div><label>Maximum amount</label><input id=bid-A-maintenance-reservation type=number min=0 value=40000></div><div><label>Importance (1–10)</label><input id=bid-A-maintenance-weight type=number min=1 max=10 value=8></div></div></div>
+   <div class=bid-issue><h4>One-time asset payment (₹)</h4><div class=field-grid three><div><label>Preferred amount</label><input id=bid-A-payout-ideal type=number min=0 value=1500000></div><div><label>Maximum amount</label><input id=bid-A-payout-reservation type=number min=0 value=3000000></div><div><label>Importance (1–10)</label><input id=bid-A-payout-weight type=number min=1 max=10 value=4></div></div></div>
+   <button class=go onclick="bid('A')">Submit A’s private bid</button></div>
+  <div><h3>Party B · typically receives</h3>
+   <div class=bid-issue><h4>Monthly maintenance (₹)</h4><div class=field-grid three><div><label>Preferred amount</label><input id=bid-B-maintenance-ideal type=number min=0 value=60000></div><div><label>Minimum amount</label><input id=bid-B-maintenance-reservation type=number min=0 value=35000></div><div><label>Importance (1–10)</label><input id=bid-B-maintenance-weight type=number min=1 max=10 value=5></div></div></div>
+   <div class=bid-issue><h4>One-time asset payment (₹)</h4><div class=field-grid three><div><label>Preferred amount</label><input id=bid-B-payout-ideal type=number min=0 value=5000000></div><div><label>Minimum amount</label><input id=bid-B-payout-reservation type=number min=0 value=2500000></div><div><label>Importance (1–10)</label><input id=bid-B-payout-weight type=number min=1 max=10 value=9></div></div></div>
+   <button class=go onclick="bid('B')">Submit B’s private bid</button></div></div>
+  <div id=negOut></div><button class=alt id=nextRoundBtn onclick="nextNegotiationRound()" hidden>Start next round</button> <button class=alt id=agreementBtn onclick="mkAgreement()" disabled>Draft agreement from agreed terms</button><div id=agOut></div></div>
+  <div class=card><h2>Evidence & hearing preparation</h2><p>Organize source material into an indexed bundle and prepare a reviewable hearing brief.</p>
+  <div class=row><div><label>Evidence type</label><select id=ek><option>message</option><option>email</option><option>bank</option><option>document</option></select>
+  <label>Date</label><input id=ed type=date><label>Source</label><input id=es placeholder="WhatsApp, bank statement...">
+  <label>Notes or excerpt</label><textarea id=et style="min-height:80px">He transferred Rs 40000 to his mother's account and stopped paying school fees from March.</textarea>
+  <label>Or upload a file</label><input type=file id=ef><button class=go onclick="addEv()">Add and tag evidence</button></div>
+  <div><button class=alt onclick="bundle()">View evidence bundle</button><a class=alt id=bx href="#">Export .docx</a>
+  <button class=go onclick="brief()">Prepare hearing brief</button></div></div><div id=evOut></div></div>`
+};
+const MODULES={
+ doc:{number:1,title:'Legal Document Generator',sub:'Intake, research and advocate-reviewed legal drafts in one workspace.',nav:'Legal documents'},
+ med:{number:2,title:'Mediation Copilot',sub:'Support constructive dialogue with private mediator insights and settlement options.',nav:'Mediation copilot'},
+ cust:{number:3,title:'Custody Modeler',sub:'Explore practical parenting schedules with the child’s welfare at the center.',nav:'Custody modeler'},
+ anal:{number:4,title:'Predictive Analytics',sub:'Review illustrative financial ranges and compare settlement scenarios.',nav:'Predictive analytics'},
+ disp:{number:5,title:'Autonomous Dispute Architect',sub:'Triage, confidential negotiation and evidence preparation, with people in control.',nav:'Dispute architect'}
+};
+function show(k){
+ const module=MODULES[k];document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.k==k));
+ const mobileTitles={doc:'Legal Documents',med:'Mediation',cust:'Custody Planner',anal:'Scenario Planner',disp:'Dispute Architect'};
+ $('#pageTitle').textContent=window.matchMedia('(max-width:680px)').matches?mobileTitles[k]:module.title;$('#pageSub').textContent=module.sub;
+ $('#main').innerHTML=`<section class=module-intro><div class=module-icon>${icon(k,26)}</div><div class=module-copy><span class=eyebrow>Module ${module.number} · Workspace</span><h2>${module.title}</h2><p>${module.sub}</p></div><span class=workspace-pill>DEMO WORKSPACE</span></section>`+TABS[k]();
+ if(k=='doc')initDraft();if(k=='med')initMed();if(k=='doc'&&CASE)renderCase()
+}
+const ICONS={
+ doc:'<path d="M7 3.75h7l4 4v12.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"/><path d="M14 3.75v4h4M8.5 12h7M8.5 15.5h7"/>',
+ med:'<path d="M4.5 5.5h15v10h-8l-4.5 3v-3h-2.5z"/><path d="M8 9.5h8M8 12.5h5"/>',
+ cust:'<circle cx="12" cy="8" r="3"/><path d="M5.5 19a6.5 6.5 0 0 1 13 0M18 5.5a3 3 0 0 1 0 5.8M19 14a5 5 0 0 1 2 4"/>',
+ anal:'<path d="M4 19.5h16"/><path d="M6.5 16V10m5.5 6V5m5.5 11v-8"/><path d="m5 7 5-3 5 2 4-3"/>',
+ disp:'<path d="M12 4v15M6 7h12M5 7l-3 6h6L5 7Zm14 0-3 6h6l-3-6ZM8 20h8"/><path d="M2 13a3 3 0 0 0 6 0m8 0a3 3 0 0 0 6 0"/>',
+ maintenance:'<path d="M4 18.5h16M6.5 18V10m5.5 8V5m5.5 13v-5"/>',
+ probability:'<path d="M5 19.5h14"/><path d="M7 16V11m5 5V6m5 10v-8"/><path d="m6 8 5-3 5 2 3-3"/>',
+ networth:'<path d="M12 3.5v17m5-13.5c0-1.6-2.1-2.8-5-2.8s-5 1.2-5 2.8 2.1 2.6 5 2.6 5 1.2 5 2.8-2.1 2.8-5 2.8-5-1.2-5-2.8"/>',
+ timeline:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/>'
+};
+function icon(name,size=20){return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||ICONS.doc}</svg>`}
+const MOBILE_NAMES={doc:'Docs',med:'Talk',cust:'Care',anal:'Stats',disp:'Resolve'};
+$('#nav').innerHTML=Object.entries(MODULES).map(([k,m])=>`<button data-k=${k} onclick="show('${k}')"><span class=nav-icon>${icon(k)}</span><span class=nav-label>${m.nav}</span><span class=nav-short>${MOBILE_NAMES[k]}</span><span class=nav-number>${m.number}</span></button>`).join('');
+const need=()=>{if(!CASE)throw new Error('Create a case first (tab 1).')};
+const availableDays=id=>Array.from(document.querySelectorAll(`#${id} input:checked`),input=>Number(input.value));
+const numericValue=id=>$('#'+id).value===''?undefined:Number($('#'+id).value);
+const money=value=>value==null?'Not provided':'₹'+Number(value).toLocaleString('en-IN');
+function collectCaseFacts(){
+ const petitioner={name:$('#petitionerName').value.trim(),occupation:$('#petitionerOccupation').value.trim(),monthly_income:numericValue('petitionerIncome')};
+ const respondent={name:$('#respondentName').value.trim(),occupation:$('#respondentOccupation').value.trim(),monthly_income:numericValue('respondentIncome')};
+ const childName=$('#caseChildName').value.trim(),childAge=numericValue('caseChildAge'),assetValue=numericValue('caseAssets'),liabilityValue=numericValue('caseLiabilities');
+ return {petitioner,respondent,marriage:{date:$('#marriageDate').value,place:$('#marriagePlace').value.trim(),personal_law:$('#personalLaw').value},
+  separation_date:$('#separationDate').value,children:childName?[{name:childName,...(childAge===undefined?{}:{age:childAge})}]:[],
+  assets:assetValue?[{name:'Matrimonial assets',value:assetValue,owner:'joint',kind:'matrimonial'}]:[],
+  liabilities:liabilityValue?[{name:'Liabilities',amount:liabilityValue}]:[],
+  jurisdiction:{city:$('#caseCity').value.trim(),state:$('#caseState').value.trim(),court:$('#caseCourt').value.trim()},
+  existing_orders:[],dispute_summary:$('#disputeSummary').value.trim()};
+}
+function renderFacts(facts){
+ const petitioner=facts.petitioner||{},respondent=facts.respondent||{},marriage=facts.marriage||{},jurisdiction=facts.jurisdiction||{};
+ const children=facts.children||[],assets=facts.assets||[],liabilities=facts.liabilities||[];
+ const assetTotal=assets.reduce((sum,item)=>sum+Number(item.value||0),0),liabilityTotal=liabilities.reduce((sum,item)=>sum+Number(item.amount||0),0);
+ const items=[
+  ['Petitioner',`${petitioner.name||'Not provided'}${petitioner.occupation?' · '+petitioner.occupation:''} · ${money(petitioner.monthly_income)}`],
+  ['Respondent',`${respondent.name||'Not provided'}${respondent.occupation?' · '+respondent.occupation:''} · ${money(respondent.monthly_income)}`],
+  ['Marriage',`${marriage.date||'Date not provided'}${marriage.place?' · '+marriage.place:''}`],
+  ['Separation',facts.separation_date||'Not provided'],
+  ['Children',children.map(child=>`${child.name||'Child'}${child.age==null?'':`, age ${child.age}`}`).join('; ')||'None listed'],
+  ['Assets',money(assetTotal)],['Liabilities',money(liabilityTotal)],
+  ['Court',jurisdiction.court||jurisdiction.city||'Not provided']
+ ];
+ if(facts.dispute_summary)items.push(['Case summary',facts.dispute_summary]);
+ return `<div class=fact-list>${items.map(([label,value])=>`<div class=fact-item><strong>${esc(label)}</strong><span>${esc(value)}</span></div>`).join('')}</div>`;
+}
+
+async function mkCase(){await run('caseOut',async()=>{const title=$('#title').value.trim();if(!title)throw new Error('Enter a case title.');CASE=await api('/cases',{method:'POST',body:{title,facts:collectCaseFacts()}});await renderCase()})()}
+async function renderCase(){const c=await api('/cases/'+CASE.id);CASE=c;out('caseOut',`<b>${esc(c.title)}</b> <span class=tag>${c.derived.marriage_years??'?'} years married</span> <span class=tag>${c.derived.children_count} children</span>${renderFacts(c.facts)}`)}
+async function upDoc(){await run('caseOut',async()=>{need();const file=$('#file').files?.[0];if(!file)throw new Error('Choose an intake document before uploading.');const f=new FormData();f.append('file',file);const r=await api(`/cases/${CASE.id}/documents`,{method:'POST',body:f});await renderCase();out('caseOut',$('#caseOut').innerHTML+`<h3>Extracted details (${esc(r.ai_mode)})</h3>${renderFacts(r.extracted)}`)})()}
+async function research(){await run('resOut',async()=>{need();const r=await api(`/cases/${CASE.id}/research`,{method:'POST',body:{query:$('#rq').value}});out('resOut',r.results.map(e=>`<div class=card><b>${esc(e.title)}</b> <span class="tag high">unverified</span><br>${esc(e.text)}</div>`).join('')+`<small>${esc(r.note)}</small>`)})()}
+
+async function initDraft(){const h=await api('/health');$('#dt').innerHTML=Object.entries(h.doc_types).map(([k,v])=>`<option value=${k}>${v}</option>`).join('');if(DID)showDraft(await api('/cases/'+CASE.id+'/drafts').then(l=>l.find(d=>d.id==DID)))}
+async function mkDraft(){await run('draftOut',async()=>{need();const d=await api(`/cases/${CASE.id}/drafts`,{method:'POST',body:{doc_type:$('#dt').value}});DID=d.id;showDraft(d)})()}
+function showDraft(d){out('draftOut',`<h3>${esc(d.title)} <span class=tag>${d.status}</span> <span class=tag>${d.ai_mode}</span></h3>
+ <h3>Risk flags</h3>${d.risks.map(r=>`<div class=${r.level}>● [${r.level}] ${esc(r.text)}</div>`).join('')||'none'}
+ <h3>Missing disclosures</h3>${d.missing.map(m=>`<span class="tag high">${m}</span>`).join('')||'<span class=low>none</span>'}
+ <h3>Draft (editable)</h3><textarea id=dtext class=legal-editor>${esc(d.text)}</textarea>
+ <label>Reviewer notes</label><input id=dnotes value="${esc(d.reviewer_notes)}">
+ <button class=go onclick="reviewDraft('approved')">Approve</button><button class=alt onclick="reviewDraft('changes_requested')">Request changes</button>
+ <a class=alt style="padding:8px 14px;border:1px solid var(--bd);border-radius:6px;color:var(--ink);text-decoration:none" href="/api/drafts/${d.id}/export">Download .docx</a>`)}
+async function reviewDraft(st){await run('draftOut',async()=>{const d=await api('/drafts/'+DID,{method:'PATCH',body:{status:st,text:$('#dtext').value,reviewer_notes:$('#dnotes').value}});showDraft(d)})()}
+
+let WS=[];
+async function initMed(){
+  if(!SID){const s=await api('/mediation/sessions',{method:'POST',body:{case_id:CASE?.id,issues:["custody schedule","monthly maintenance","flat ownership"]}});SID=s.session_id}
+  WS.forEach(w=>w.close());const proto=location.protocol=='https:'?'wss':'ws';
+  const mk=(q,fn)=>{const w=new WebSocket(`${proto}://${location.host}/api/ws/mediation/${SID}?${q}`);w.onmessage=e=>fn(JSON.parse(e.data));return w};
+  const pc=$('#pchat'),mc=$('#mchat');
+  const wp=mk('role=party&party=A',m=>{if(m.type=='message'){pc.innerHTML+=`<div class=msg><b>${m.party}:</b> ${esc(m.text)}</div>`;pc.scrollTop=1e9}});
+  const wm=mk('role=mediator',m=>{if(m.type=='analysis'){const a=m.analysis;mc.innerHTML+=`<div class="msg esc${a.escalation}"><b>${m.party}</b>: ${esc(m.text)}<br>
+   <small>sentiment ${a.sentiment} · ${esc(a.emotion)} · escalation ${a.escalation} ${a.flags.map(f=>`<span class="tag high">${f}</span>`).join('')}</small><br>
+   <b>Rephrase:</b> ${esc(a.rephrase)}<br><i>${esc(a.mediator_prompt)}</i></div>`;mc.scrollTop=1e9}});
+  WS=[wp,wm];
+}
+function sendMsg(){const t=$('#ptext').value.trim();if(!t)return;WS[0].send(JSON.stringify({party:$('#who').value,text:t}));$('#ptext').value=''}
+async function medOptions(){await run('optOut',async()=>{const r=await api(`/mediation/sessions/${SID}/options`,{method:'POST'});out('optOut',r.options.map(o=>`<div class=card><b>${esc(o.title)}</b><br>${esc(o.summary)}<br><small>A: ${esc(o.gives_A)} · B: ${esc(o.gives_B)} · Risks: ${esc(o.risks)}</small></div>`).join(''))})()}
+
+async function mkCustody(){await run('custOut',async()=>{const inp={child:{name:$('#childName').value,age:Number($('#childAge').value),special_needs:[]},
+ parent_a:{name:$('#parentA').value,role:'parent',available_days:availableDays('availabilityA')},parent_b:{name:$('#parentB').value,role:'parent',available_days:availableDays('availabilityB')},
+ distance_km:Number($('#distanceKm').value),proposed_primary:$('#primaryParent').value,preferred_pattern:''};if(CASE)inp.case_id=CASE.id;const p=await api('/custody/plan',{method:'POST',body:inp});PID=p.id;
+ const first=p.calendar[0].weekday;const pad=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(first);
+ out('custOut',`<h3>Recommended: ${esc(p.chosen.label)} <span class=tag>score ${p.chosen.score}</span> <span class=tag>other parent ${p.chosen.secondary_share_pct}% of nights</span></h3>${p.note?`<div class=medium>${esc(p.note)}</div>`:''}
+ <div class=cal>${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div><b>${d}</b></div>`).join('')}${p.calendar.map(d=>`<div class=${d.with} title="${d.date}">${d.date.slice(5)}<br>${d.with}</div>`).join('')}</div>
+ <h3>Welfare notes</h3>${p.welfare_notes.map(w=>`<div>• ${esc(w)}</div>`).join('')}
+ <h3>Alternatives</h3>${p.alternatives.map(a=>`<div>${a.feasible?'✔':'✖'} ${esc(a.label)} - ${a.score} ${a.infeasible_reason?'('+esc(a.infeasible_reason)+')':''}</div>`).join('')}
+ <h3>Agreement</h3><div class=legal-document>${esc(p.agreement_text)}</div><a class=alt style="padding:8px 14px;border:1px solid var(--bd);border-radius:6px;color:var(--ink);text-decoration:none" href="/api/custody/${p.id}/export">Download .docx</a>`)})()}
+
+const hist=(h,cls)=>{const max=Math.max(1,...h.counts);return `<div class="bars ${cls}" role="img" aria-label="Distribution of simulated settlement values">${h.counts.map((c,i)=>`<i style="height:${Math.max(3,c/max*100)}%" title="Range ${i+1}: ${c} scenarios"></i>`).join('')}</div><div class=chart-legend><span class=legend-item><i class="legend-dot ${cls==='b'?'gold':''}"></i>Simulated outcomes</span><span class=legend-item>Distribution range</span></div><div class=chart-stats><span>P10 <strong>${money(h.p10)}</strong></span><span>Median <strong>${money(h.p50)}</strong></span><span>P90 <strong>${money(h.p90)}</strong></span></div>`};
+async function predict(){await run('aout',async()=>{const body={monthly_income_payer:Number($('#incomePayer').value),monthly_income_payee:Number($('#incomePayee').value),
+ monthly_expenses_payee:Number($('#expensesPayee').value),marriage_years:Number($('#marriageYears').value),children_count:Number($('#childrenCount').value),
+ payee_has_custody:$('#hasCustody').checked,payee_homemaker:$('#homemaker').checked,
+ assets:[{name:'Matrimonial assets',value:Number($('#assetsValue').value),kind:'matrimonial'}],
+ liabilities:[{name:'Liabilities',amount:Number($('#liabilitiesValue').value)}]};
+ const r=await api('/analytics/predict',{method:'POST',body});const h=r.heuristic,m=h.maintenance_monthly;
+ const probability=Math.max(0,Math.min(100,Number(r.scenarios.prob_negotiated_beats_litigated)*100||0)),timeline=h.timeline_months;
+ const monthRange=range=>`${range[0]}–${range[1]} mo`;
+ out('aout',`<div class=analytics-kpis>
+  <div class="metric-card maintenance"><div class=metric-head><span>Monthly maintenance</span><span class=metric-icon>${icon('maintenance',17)}</span></div><strong class=metric-value>${money(m.mid)}</strong><span class=metric-note>Illustrative range ${money(m.low)}–${money(m.high)}</span></div>
+  <div class="metric-card settlement"><div class=metric-head><span>Negotiated settlement</span><span class=metric-icon>${icon('networth',17)}</span></div><strong class=metric-value>${money(r.scenarios.negotiated.p50)}</strong><span class=metric-note>Estimated median present value</span></div>
+  <div class="metric-card probability"><div class=metric-head><span>Settlement likelihood</span><span class=metric-icon>${icon('probability',17)}</span></div><strong class=metric-value>${probability.toFixed(0)}%</strong><span class=metric-note>Negotiated value ≥ litigated estimate</span></div>
+  <div class="metric-card assetshare"><div class=metric-head><span>Payee asset share</span><span class=metric-icon>${icon('networth',17)}</span></div><strong class=metric-value>${h.payee_asset_share_pct.low}–${h.payee_asset_share_pct.high}%</strong><span class=metric-note>Illustrative share of matrimonial assets</span></div>
+  <div class="metric-card networth"><div class=metric-head><span>Estimated net worth</span><span class=metric-icon>${icon('networth',17)}</span></div><strong class=metric-value>${money(r.disclosure.net_worth)}</strong><span class=metric-note>Assets less reported liabilities</span></div>
+  <div class="metric-card timeline"><div class=metric-head><span>Contested timeline</span><span class=metric-icon>${icon('timeline',17)}</span></div><strong class=metric-value>${monthRange(timeline.contested)}</strong><span class=metric-note>Illustrative months to resolution</span></div>
+ </div>
+ <div class=card><div class=chart-title><div><h3>Resolution timeline</h3><p>Indicative duration by path · not a court-service guarantee</p></div><span class=tag>MONTHS</span></div>
+  <div class=timeline-grid><div class="timeline-card recommended"><span>Mutual consent</span><strong>${monthRange(timeline.mutual_consent)}</strong><small>Direct agreement</small></div><div class=timeline-card><span>Negotiated mediation</span><strong>${monthRange(timeline.negotiated_mediation)}</strong><small>Structured settlement</small></div><div class=timeline-card><span>Contested proceedings</span><strong>${monthRange(timeline.contested)}</strong><small>Litigated pathway</small></div></div>
+ </div>
+ ${r.disclosure.missing_sections.length?`<div class="analytics-note high"><strong>Disclosure needs attention</strong><br>Missing sections: ${r.disclosure.missing_sections.map(esc).join(', ')}</div>`:''}
+ <div class=chart-grid><section class=chart-card><div class=chart-title><div><h3 class="scenario-title">Litigated estimate</h3><p>Present-value outcomes for the payee</p></div><span class=tag>MODEL RANGE</span></div>${hist(r.scenarios.litigated,'')}</section>
+ <section class=chart-card><div class=chart-title><div><h3 class="scenario-title gold">Negotiated estimate</h3><p>Present-value outcomes for the payee</p></div><span class=tag>MODEL RANGE</span></div>${hist(r.scenarios.negotiated,'b')}</section></div>
+ <div class=probability-row><strong>Chance negotiated value meets or exceeds litigated</strong><div class=probability-track role=img aria-label="${probability.toFixed(0)} percent estimated probability"><span style="--probability:${probability}%"></span></div><span class=probability-value>${probability.toFixed(0)}%</span></div>
+ <div class=analytics-note>${esc(r.narrative)}<br><small>Source: ${esc(r.data_source)} · ${esc(r.ai_mode)} · Illustrative analysis, not legal advice or a prediction of a court decision.</small></div>`)})()}
+async function tradeoff(){await run('tout',async()=>{const r=await api('/analytics/tradeoff',{method:'POST',body:{
+ asset_value_given_up:Number($('#tradeAsset').value),current_monthly:Number($('#tradeMonthly').value),horizon_months:Number($('#tradeHorizon').value)}});
+ out('tout',`<div class=tradeoff-kpis><div class=tradeoff-kpi><span>One-time asset value</span><strong>${money(Number($('#tradeAsset').value))}</strong></div><div class=tradeoff-kpi><span>Equivalent monthly reduction</span><strong>${money(r.equivalent_monthly_reduction)}</strong></div><div class=tradeoff-kpi><span>Adjusted monthly amount</span><strong>${money(r.new_monthly)}</strong></div></div><p class=analytics-note>${esc(r.note)}</p>`)})()}
+
+async function triage(){await run('triOut',async()=>{const r=await api('/dispute/triage',{method:'POST',body:{text:$('#tri').value}});
+ out('triOut',`<h3 class=${r.route=='emergency_court'?'high':'low'}>Route: ${r.route} (urgency ${r.urgency}/5)</h3>${(r.reasons||[]).map(x=>`<div>• ${esc(x)}</div>`).join('')}<h3>Steps</h3>${(r.recommended_steps||[]).map(x=>`<div>→ ${esc(x)}</div>`).join('')}${r.helplines?`<h3>Helplines</h3>${Object.entries(r.helplines).map(([k,v])=>`<span class=tag>${k}: <b>${v}</b></span>`).join('')}`:''}`)})()}
+function updateNegotiationControls(){const agreed=Object.values(NRESULT||{}).some(v=>v.status==='agreed');$('#agreementBtn').disabled=!agreed;$('#nextRoundBtn').hidden=!NRESULT||agreed}
+async function mkNeg(){await run('negOut',async()=>{const n=await api('/dispute/negotiations',{method:'POST',body:{case_id:CASE?.id,issues:[{key:'maintenance',label:'Monthly maintenance (₹)'},{key:'payout',label:'One-time asset payout (₹)'}]}});NID=n.negotiation_id;NRESULT=null;$('#negId').textContent=NID;$('#agOut').innerHTML='';updateNegotiationControls();out('negOut','<i>Negotiation started. Submit both parties’ bids to see which issues overlap.</i>')})()}
+async function bid(p){await run('negOut',async()=>{if(!NID)throw new Error('Click "Start negotiation" first');const bids={},weights={};for(const key of ['maintenance','payout']){
+ const ideal=$(`#bid-${p}-${key}-ideal`).valueAsNumber,reservation=$(`#bid-${p}-${key}-reservation`).valueAsNumber,weight=$(`#bid-${p}-${key}-weight`).valueAsNumber;
+ if(!Number.isFinite(ideal)||!Number.isFinite(reservation)||!Number.isFinite(weight))throw new Error('Enter both amounts and an importance rating for each issue.');
+ if(weight<1||weight>10)throw new Error('Importance ratings must be between 1 and 10.');
+ if(p==='A'&&ideal>reservation)throw new Error('Party A’s preferred amount must be no greater than the maximum amount.');
+ if(p==='B'&&ideal<reservation)throw new Error('Party B’s preferred amount must be at least the minimum amount.');
+ bids[key]={ideal,reservation};weights[key]=weight;
+ }
+ const r=await api(`/dispute/negotiations/${NID}/bid`,{method:'POST',body:{party:p,bids,weights}});
+ NRESULT=r.results||null;updateNegotiationControls();
+ const results=r.results?Object.entries(r.results).map(([k,v])=>`<div class=card><b>${k==='maintenance'?'Monthly maintenance':'One-time asset payment'}</b>: <span class=${v.status=='agreed'?'low':'medium'}>${v.status}</span> ${v.value!==undefined?'→ proposed ₹'+v.value.toLocaleString('en-IN'):''} ${v.gap_band?'· gap '+v.gap_band:''}<br><small>${esc(v.message||'')}</small></div>`).join(''):'';
+ const guidance=r.results?(Object.values(r.results).some(v=>v.status==='agreed')?'<p>At least one issue is agreed. You can draft an agreement using the agreed terms.</p>':'<p>No issues overlap yet. Review both parties’ own positions, then start another round to submit revised bids.</p>'):'<p>Waiting for the other party to submit a bid. No private amounts are shown here.</p>';
+ out('negOut',`<div>Round ${r.round}: Party A ${r.submitted.A?'submitted ✔':'pending'} · Party B ${r.submitted.B?'submitted ✔':'pending'}</div>${results}${guidance}`)})()}
+async function nextNegotiationRound(){await run('negOut',async()=>{if(!NID)throw new Error('Start a negotiation first.');const r=await api(`/dispute/negotiations/${NID}/next-round`,{method:'POST'});NRESULT=null;$('#agOut').innerHTML='';updateNegotiationControls();out('negOut',`<p>Round ${r.round} started. Both parties can now submit revised bids. Your amount fields are unchanged.</p>`)})()}
+async function mkAgreement(){await run('agOut',async()=>{if(!NID)throw new Error('Start a negotiation first.');if(!Object.values(NRESULT||{}).some(v=>v.status==='agreed'))throw new Error('An agreement can only be drafted after both bids are submitted and at least one issue is agreed.');const d=await api(`/dispute/negotiations/${NID}/agreement`,{method:'POST'});out('agOut',`<div class=legal-document>${esc(d.text)}</div><a class=alt href="/api/drafts/${d.id}/export">Download .docx</a>`)})()}
+async function addEv(){await run('evOut',async()=>{need();const f=new FormData();f.append('kind',$('#ek').value);f.append('date',$('#ed').value);f.append('source',$('#es').value);f.append('text',$('#et').value);if($('#ef').files[0])f.append('file',$('#ef').files[0]);await api(`/cases/${CASE.id}/evidence`,{method:'POST',body:f});bundle()})()}
+async function bundle(){await run('evOut',async()=>{need();$('#bx').href=`/api/cases/${CASE.id}/evidence/bundle/export`;const b=await api(`/cases/${CASE.id}/evidence/bundle`);out('evOut',b.map(r=>`<div class=card><b>${r.exhibit}</b> · ${r.date||'undated'} · ${r.kind} ${(r.tags||[]).map(t=>`<span class=tag>${t}</span>`).join('')} rel ${r.relevance}/5<br>${esc(r.summary)}</div>`).join('')||'<i>No evidence yet.</i>')})()}
+async function brief(){await run('evOut',async()=>{need();const r=await api(`/cases/${CASE.id}/hearing-brief`,{method:'POST',body:{}});out('evOut',`<h3>Argument brief</h3><div>${esc(r.argument_brief)}</div><h3>Cross-examination pointers</h3>${(r.cross_examination_pointers||[]).map(c=>`<div class=card><b>${esc(c.topic)}</b> ${(c.exhibit_refs||[]).map(e=>`<span class=tag>${esc(e)}</span>`).join('')}<br>${(c.questions||[]).map(q=>`<div>? ${esc(q)}</div>`).join('')}</div>`).join('')}<h3>Weak points</h3>${(r.weak_points||[]).map(w=>`<div>• ${esc(w)}</div>`).join('')}`)})()}
+
+api('/health').then(h=>{$('#mode').textContent=h.ai_mode=='gemini'?'AI: Gemini':'AI: Offline demo';$('#disc').textContent=h.disclaimer});
+show('doc');
+</script></body></html>
